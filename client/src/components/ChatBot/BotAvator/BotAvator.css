@@ -1,0 +1,17 @@
+.stack-bot-avator{
+    height: 35px;
+    width: 35px;
+    border-radius: 55%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    background-color:rgb(225, 225, 225);
+    padding:10px;
+    
+}
+
+.stack-bot-avator > img{
+    height: 20px;
+    width: 20px;
+}

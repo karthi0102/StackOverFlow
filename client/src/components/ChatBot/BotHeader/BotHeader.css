@@ -1,0 +1,12 @@
+.bot-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    border-bottom: 3px lightgray solid;
+}
+
+.bot-header > img{
+    height: 25px;
+    width: 25px;
+}
