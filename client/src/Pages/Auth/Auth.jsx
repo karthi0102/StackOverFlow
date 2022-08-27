@@ -1,28 +1,40 @@
+import { getAuth,signOut, getUser,RecaptchaVerifier,signInWithPhoneNumber  } from "firebase/auth";
+import firebase from "../../Firebase/index";
 import React,{useState} from 'react'
 import './Auth.css'
 import AboutAuth from './AboutAuth'
 import icon from '../../assets/icon.png'
 import {useDispatch} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
-import { signup,login,verifyOtp } from '../../actions/auth'
+import { signup,login } from '../../actions/auth'
 const Auth = () => {
-    const generateOTP = () => {
-        var digits = '0123456789';
-        let OTP = '';
-        for (let i = 0; i < 4; i++ ) {
-            OTP += digits[Math.floor(Math.random() * 10)];
-        }
-        return OTP;
+
+
+    const configureCaptcha = ()=>{
+        const auth = getAuth();
+          window.recaptchaVerifier = new RecaptchaVerifier('sign-in-button', {
+          'size': 'invisible',
+        'callback': (response) => {
+      // reCAPTCHA solved, allow signInWithPhoneNumber.
+            onSignInSubmit();
+            console.log("Recaptcha verifed");
+         },
+         defaultCountry:"IN"
+    }, auth);
     }
+
+    
+
+
   const [isSignup,setIsSignUp]=useState(false) 
   const [disOtp,setDisOtp]=useState(false)
-  const [gotp,setgotp]=useState(generateOTP())
   const handleSwitch = () =>{
     setIsSignUp(!isSignup)
   }
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [mobile,setMobile]=useState('')
   const [password, setPassword] = useState('')
   const [otp,setOtp] =useState('')
 
@@ -32,13 +44,57 @@ const Auth = () => {
 
   const handleSubmit = async(e) => {
         e.preventDefault()
-        dispatch(verifyOtp(gotp,email))
+        onSignInSubmit()
         setDisOtp(!disOtp)
   }
 
-  const verify = (e) =>{
+  const verify =(e) =>{
     e.preventDefault()
+    if(!email && !password){
+        alert('Enter enail and password')
+    }
+    if(isSignup){
+        if(!name){
+            alert('Enter a name to continue')
+        }
+       
+        dispatch(signup({name,email,password},navigate))
         
+    }else{
+        dispatch(login({email,password},navigate))
+    }
+  }
+  
+
+
+const onSignInSubmit=()=> {
+   
+    configureCaptcha()
+    const phoneNumber ="+91"+ mobile;
+    console.log(phoneNumber)
+    const appVerifier = window.recaptchaVerifier;
+    
+    const auth = getAuth();
+    signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+        .then((confirmationResult) => {
+          
+          window.confirmationResult = confirmationResult;
+          console.log('otp send')
+          
+        }).catch((error) => {
+          console.log(error)
+          
+        });
+    
+  };
+
+
+  const onSubmitOtp = (e) =>{
+    e.preventDefault()
+    const code = otp;
+    window.confirmationResult.confirm(code).then((result) => {
+        console.log('signed in')
+ 
         if(!email && !password){
             alert('Enter enail and password')
         }
@@ -46,19 +102,25 @@ const Auth = () => {
             if(!name){
                 alert('Enter a name to continue')
             }
-            if(gotp!=otp){
-                alert('otp not match')
-            }
             dispatch(signup({name,email,password},navigate))
             
         }else{
             dispatch(login({email,password},navigate))
         }
-        
+
+  // ...
+}).catch((error) => {
+  // User couldn't sign in (bad verification code?)
+  // ...
+ 
+});
   }
+
+
 
   return (
     <section className='auth-section'>
+        <div id="sign-in-button"></div>
     {!disOtp ?
     <>
     {isSignup && <AboutAuth />}
@@ -67,22 +129,37 @@ const Auth = () => {
         <form onSubmit={isSignup ?handleSubmit:verify}>
             {
                 isSignup && (
+                    <div>
                     <label htmlFor='name'>
                         <h4>Display Name</h4>
                         <input type="text" id='name' name='name' value={name} onChange={(e) => {setName(e.target.value)}} />
                     </label>
-                )
+               
+                     <label htmlFor='phone'>
+                         <h4>Phone Number</h4>
+                         <input type="tel" id='mobile' name='mobile' value={mobile} onChange={(e) => {setMobile(e.target.value)}} />
+                     </label>
+                     </div>
+                 )
+                
             }
+            
+           
+          
+          
             <label htmlFor="email">
                 <h4>Email</h4>
                 <input type="email" name='email' id='email' value={email} onChange={(e) => {setEmail(e.target.value)}}/>
             </label>
+            
+
             <label htmlFor="password">
                 <div style={{display:"flex", justifyContent:"space-between"}}>
                     <h4>Password</h4>
                     { !isSignup && <p style={{ color: "#007ac6", fontSize:'13px'}}>forgot password?</p> }
                 </div>
                 <input type="password" name='password' id='password' value={password} onChange={(e) => {setPassword(e.target.value)}}/>
+                
                 { isSignup && <p style={{ color: "#666767", fontSize:"13px"}}>Passwords must contain at least eight<br />characters, including at least 1 letter and 1<br /> number.</p> }
             </label>
             {
@@ -113,7 +190,7 @@ const Auth = () => {
     </>
     :
     <div className="auth-container-2">
-        <form onSubmit={verify}>
+        <form onSubmit={onSubmitOtp}>
           <label htmlFor='otp'>
                         <h4>Enter Otp</h4>
                         <input type="text" name="otp" id="otp"  value={otp} onChange={(e) => {setOtp(e.target.value)}} />

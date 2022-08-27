@@ -1,6 +1,17 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import dotenv from 'dotenv'
 import sendMail from '../middlewares/otp.js'
+dotenv.config()
+const accountSid = process.env.ACCOUNTSID
+const authToken = process.env.AUTHTOKEN
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const client = require('twilio')(accountSid,authToken)
+
+
+// import {client as client(accountSid,authToken)} from 'twilio'
+
 import users from '../models/auth.js'
 
 export const signup =async(req,res)=>{
@@ -39,12 +50,24 @@ export const login = async(req,res)=>{
 }
 
 export const sendOtp=async(req,res) =>{
-    const {email,gotp:otp} = req.body
-    try {
-        let msg=`Your otp is ${otp} ,-Stackoverflow`
-        sendMail(email,msg)
-        res.status(200).json('success')
-    } catch (error) {
-        res.status(400).json({message:error.message})
-    }
+    // const {email,gotp:otp} = req.body
+    // try {
+    //     let msg=`Your otp is ${otp} ,-Stackoverflow`
+    //     sendMail(email,msg)
+    //     res.status(200).json('success')
+    // } catch (error) {
+    //     res.status(400).json({message:error.message})
+    // }
+    const {phone,otp} = req.body
+    client.messages
+   .create({
+      body:`Your Otp is ${otp}`,
+      from:'+12064950490',
+      to:phone,
+    })
+   .then(message => res.json(message.sid))
+   .catch(err =>{
+       res.send(err.message)
+   })
+   
 }

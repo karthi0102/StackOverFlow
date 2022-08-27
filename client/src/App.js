@@ -7,6 +7,7 @@ import {fetchAllQuestions} from './actions/question'
 import { getAllUsers } from './actions/users';
 import { useDispatch } from 'react-redux';
 function App() {
+  
   const dispatch = useDispatch()
   useEffect(()=>{
     dispatch(fetchAllQuestions())
