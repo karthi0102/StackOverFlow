@@ -28,6 +28,8 @@ const Auth = () => {
 
   const [isSignup,setIsSignUp]=useState(false) 
   const [disOtp,setDisOtp]=useState(false)
+
+  
   const handleSwitch = () =>{
     setIsSignUp(!isSignup)
   }
