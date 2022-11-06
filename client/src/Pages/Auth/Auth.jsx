@@ -98,7 +98,7 @@ const onSignInSubmit=()=> {
         console.log('signed in')
  
         if(!email && !password){
-            alert('Enter enail and password')
+            alert('Enter email and password')
         }
         if(isSignup){
             if(!name){
