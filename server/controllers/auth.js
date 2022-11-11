@@ -15,14 +15,14 @@ const client = require('twilio')(accountSid,authToken)
 import users from '../models/auth.js'
 
 export const signup =async(req,res)=>{
-    const {name,email,password} = req.body;
+    const {name,email,password,mobile} = req.body;
     try{
         const existinguser=await users.findOne({email})
         if(existinguser){
             return res.status(400).json({message:'User already found..'})
         }
         const hashPassword = await bcrypt.hash(password,12);
-        const newUser=await users.create({name,email,password:hashPassword})
+        const newUser=await users.create({name,email,mobile,password:hashPassword})
         const token = jwt.sign({email:newUser.email,id:newUser._id},process.env.JWT_SECRET,{expiresIn:'1h'})
         res.status(200).json({result:newUser,token})
         }catch(err){
@@ -32,9 +32,9 @@ export const signup =async(req,res)=>{
 
 
 export const login = async(req,res)=>{
-    const {email,password} = req.body;
+    const {mobile} = req.body;
     try{
-        const existinguser = await users.findOne({email})
+        const existinguser = await users.findOne({mobile})
         if(!existinguser){
             return res.status(404).json({message:"User not found..."})
         }
@@ -47,27 +47,4 @@ export const login = async(req,res)=>{
     }catch(err){
         res.status(500).json(err.message)
     }
-}
-
-export const sendOtp=async(req,res) =>{
-    // const {email,gotp:otp} = req.body
-    // try {
-    //     let msg=`Your otp is ${otp} ,-Stackoverflow`
-    //     sendMail(email,msg)
-    //     res.status(200).json('success')
-    // } catch (error) {
-    //     res.status(400).json({message:error.message})
-    // }
-    const {phone,otp} = req.body
-    client.messages
-   .create({
-      body:`Your Otp is ${otp}`,
-      from:'+12064950490',
-      to:phone,
-    })
-   .then(message => res.json(message.sid))
-   .catch(err =>{
-       res.send(err.message)
-   })
-   
 }

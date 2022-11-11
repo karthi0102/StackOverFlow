@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema({
     tags:{
         type:[String]
     },
+    mobile:{
+        type:Number,
+    },
     joinedOn:{
         type:Date,
         default:Date.now
