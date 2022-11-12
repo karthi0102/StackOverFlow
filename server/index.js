@@ -4,7 +4,7 @@ import cors from 'cors'
 import userRoutes from "./routes/users.js";
 import questionRoutes from './routes/questions.js'
 import answerRoutes from './routes/answer.js'
-import chatbotROutes from './routes/chatbot.js'
+import chatbotRoutes from './routes/chatbot.js'
 import dotenv from 'dotenv'
 
 const app = express();
@@ -26,10 +26,10 @@ app.get("/",(req,res)=>{
     res.send("This is a Stack overflow")
 })
 
-app.use('/user',userRoutes)
-app.use('/questions',questionRoutes)
-app.use('/answer',answerRoutes)
-app.use('/chatbot',chatbotROutes)
+// app.use('/user',userRoutes)
+// app.use('/questions',questionRoutes)
+// app.use('/answer',answerRoutes)
+// app.use('/chatbot',chatbotRoutes)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,()=>{
     console.log("server is running on",PORT);
