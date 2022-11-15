@@ -26,10 +26,10 @@ app.get("/",(req,res)=>{
     res.send("This is a Stack overflow")
 })
 
-// app.use('/user',userRoutes)
-// app.use('/questions',questionRoutes)
-// app.use('/answer',answerRoutes)
-// app.use('/chatbot',chatbotRoutes)
+app.use('/user',userRoutes)
+app.use('/questions',questionRoutes)
+app.use('/answer',answerRoutes)
+app.use('/chatbot',chatbotRoutes)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,()=>{
     console.log("server is running on",PORT);
