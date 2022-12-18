@@ -14,6 +14,21 @@ class ActionProvider {
    setChatbotMessage = (message) =>{
     this.setState(state =>({...state,messages:[...state.messages,message]}) )
    }
+
+   name = async()=>{
+    const sendMessage=this.createChatBotMessage('My name is stackBot')
+    this.setChatbotMessage(sendMessage)
+   }
+
+   greet=async()=>{
+    const sendMessage=this.createChatBotMessage('Hello ask your question')
+    this.setChatbotMessage(sendMessage)
+   }
+
+   age=async()=>{
+    const sendMessage=this.createChatBotMessage('Im a bot,🤣🤣 i have no life')
+    this.setChatbotMessage(sendMessage)
+   }
      
       answer =async (message) =>{
         // const {data} =await axios.post('http://localhost:5000/chatbot/',{message})
@@ -24,6 +39,7 @@ class ActionProvider {
         
         const sendMessage=this.createChatBotMessage(`By StackBot`,{widget:"answer"})
         this.setChatbotMessage(sendMessage)
+
       }
 
 
